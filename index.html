@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GROUP TIMELINE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f1f1;
+            padding: 40px;
+        }
+
+        .chat-box {
+            width: 500px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        #message {
+            width: 458px;
+            padding: 20px;
+            font-size: 26px;
+            border: 2px solid #cccccc;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+            #message:focus {
+                border-color: #4CAF50;
+                box-shadow: 0 0 5px rgba(76, 175, 80, 0.4);
+            }
+
+        #sendBtn {
+            margin-top: 5px;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 4px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #responseContainer {
+            margin-top: 5px
+        }
+
+        .responseBox {
+            border: 1px solid #ccc;
+            padding: 0x;
+            border-radius: 6px;
+            margin-bottom: 0px;
+        }
+
+        .responseText {
+            min-height: 50px;
+            font-size: 36px;
+            padding: 6px;
+            background: #fff;
+            border-radius: 2px;
+        }
+
+        .buttons {
+            display: none;
+            margin-top: 6px;
+            gap: 4px;
+            flex-wrap: nowrap;
+        }
+
+        .icon-btn {
+            flex: 1;
+            padding: 5px;
+            font-size: 16px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            color: white;
+            border: none;
+        }
+
+        .edit-btn {
+            background: #2196F3;
+        }
+
+        .save-btn {
+            background: #4CAF50;
+            display: none;
+        }
+
+        .delete-btn {
+    display: none;         /* hidden by default */
+    position: absolute;    /* position over the box */
+    top: 10px;             /* adjust as needed */
+    right: 0px;           /* adjust as needed */
+    background: #e53935;
+    color: white;
+    border: none;
+    padding: 20px 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 30px;
+}
+
+/* Show delete button on hover */
+.responseBox:hover .delete-btn {
+    display: block;
+}
+    </style>
+</head>
+<body>
+    <h1>Add to the Timeline</h1>
+    <h3>note that there is a small delay when deleting objects</h3>
+
+    <div class="chat-box">
+
+        <input id="message" type="text" placeholder="Type an entry...">
+
+        <button id="sendBtn">ADD</button>
+
+        <div id="responseContainer"></div>
+    </div>
+    <script src="main.js"></script>
+<script>
+function loadItems() {
+    fetch("get_items.php")
+        .then(res => res.json())
+        .then(items => {
+            document.getElementById("list").innerHTML = "";
+            items.forEach(i => {
+                const li = document.createElement("li");
+                li.textContent = i.text;
+                document.getElementById("list").appendChild(li);
+            });
+        });
+}
+
+function addItem() {
+    const text = document.getElementById("message").value;
+
+    const formData = new FormData();
+    formData.append("text", text);
+
+    fetch("add_item.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("message").value = "";
+            loadItems();
+        } else {
+            alert("Error: " + data.error);
+        }
+    });
+}
+
+loadItems();
+setInterval(loadItems, 3000);
+</script>
+</body>
+</html>
